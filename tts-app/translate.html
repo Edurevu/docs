@@ -163,12 +163,13 @@
       <div>
         <label for="model">Modelo</label>
         <select id="model">
-          <option value="gpt-realtime" selected>gpt-realtime</option>
-          <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview</option>
-          <option value="gpt-4o-mini-realtime-preview">gpt-4o-mini-realtime-preview</option>
+          <option value="gpt-4o-mini-realtime-preview" selected>mini realtime &mdash; barato</option>
+          <option value="gpt-realtime">gpt-realtime &mdash; mejor calidad</option>
+          <option value="gpt-4o-realtime-preview">gpt-4o realtime &mdash; intermedio</option>
         </select>
       </div>
     </div>
+    <div class="hint" id="modelCost"></div>
 
     <details style="margin-top: 10px;">
       <summary>Avanzado</summary>
@@ -268,6 +269,16 @@
   persist(STORE.langA, langAEl, "change"); persist(STORE.langB, langBEl, "change");
   persist(STORE.voice, voiceEl, "change"); persist(STORE.model, modelEl, "change");
   persist(STORE.vad, vadEl);
+
+  const MODEL_COST = {
+    "gpt-4o-mini-realtime-preview": "~$0.015/min entrada, ~$0.06/min salida. 10 min ~ $0.40-0.80.",
+    "gpt-realtime":                  "~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
+    "gpt-4o-realtime-preview":       "~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
+  };
+  const modelCostEl = document.getElementById("modelCost");
+  const updateModelCost = () => { modelCostEl.textContent = MODEL_COST[modelEl.value] || ""; };
+  modelEl.addEventListener("change", updateModelCost);
+  updateModelCost();
 
   toggleKeyEl.addEventListener("click", () => {
     const showing = apiKeyEl.type === "text";
@@ -401,8 +412,9 @@ STRICT RULES:
       running = true;
       micBtn.classList.add("active");
       micBtn.disabled = false;
+      [modelEl, voiceEl, langAEl, langBEl].forEach(el => el.disabled = true);
       micLabel.textContent = "Escuchando... toca para parar";
-      setStatus("En vivo", "ok");
+      setStatus("En vivo (" + modelEl.value + ")", "ok");
     });
     dc.addEventListener("message", (e) => {
       let ev; try { ev = JSON.parse(e.data); } catch { return; }
@@ -435,6 +447,7 @@ STRICT RULES:
   function stop() {
     running = false;
     micBtn.classList.remove("active");
+    [modelEl, voiceEl, langAEl, langBEl].forEach(el => el.disabled = false);
     micLabel.textContent = "Toca para iniciar";
     if (dc) { try { dc.close(); } catch {} dc = null; }
     if (pc) { try { pc.close(); } catch {} pc = null; }
