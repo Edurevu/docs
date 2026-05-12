@@ -1,0 +1,19 @@
+{
+  "name": "OpenAI TTS",
+  "short_name": "TTS",
+  "description": "Text-to-speech con la nueva voz de OpenAI",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0f17",
+  "theme_color": "#0b0f17",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
