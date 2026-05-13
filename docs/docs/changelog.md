@@ -2,6 +2,54 @@
 
 Here you can see the changes made with each release of the main framework and the live trading plugin:
 
+## 2.1.1 (9 May 2026)
+
+- **[NEW]** Added `self.base_asset` and `self.quote_asset` properties to the strategy class, returning the base and quote parts of the current trading symbol (e.g. `BTC` and `USDT` for `BTC-USDT`).
+- **[FIX]** Fixed a bug where running a backtest session with multiple strategies that each have a DNA value caused the wrong hyperparameters to be injected into all strategies after the first one.
+- **[FIX]** Fixed incorrect sorting in the backtest, optimization, and Monte Carlo history pages. Sessions were being sorted alphabetically by the formatted date string (e.g. "Nov" before "May") instead of by the actual timestamp.
+- **[FIX]** Fixed the "new version available" banner being displayed inside the sidebar instead of at the top of the page.
+- **[FIX]** Fixed a crash on startup in live trading on Apex when the exchange rejected the historical orders request due to an invalid time range.
+- **[FIX]** Fixed a bug in the import candles page where switching the exchange did not refresh the list of supported symbols.
+- **[FIX]** Fixed an issue where importing candles from Bitfinex Spot failed for certain symbols.
+
+## 2.1.0 (8 May 2026)
+
+- **[BREAKING CHANGE]** The `trials` parameter of the `optimize()` research function now works the same way as the dashboard's optimization mode — it sets the number of trials **per hyperparameter** instead of the total number of trials.
+- **[IMPROVEMENT]** Added a minimize/expand toggle button to the Hyperparameters and Session Notes sections in the backtest results sidebar.
+- **[FIX]** Fixed an issue in live trading where candles on Hyperliquid could have incorrect or unaligned timestamps, causing chart display errors and duplicate data in the database.
+- **[FIX]** Fixed a bug in live trading where the PNL of a closed trade was reported as much larger than the actual balance change. This happened when an order was filled in multiple partial fills, causing the quantity to be over-counted.
+- **[FIX]** Fixed a WebSocket connectivity issue on Binance Testnet.
+
+## 2.0.1 (2 May 2026)
+
+- **[NEW]** Added export and import support for notification drivers (Telegram, Discord, Slack) on the Notification API Keys page, matching the existing functionality on the Exchange API Keys page.
+- **[NEW]** Added an exchange type filter to the "Manage Candles" page in the dashboard. Users can now filter the candles table to show all exchanges, only those that support backtesting, or only those that support live trading (but not backtesting).
+- **[NEW]** Added a "Purge" feature to the "Manage Candles" page. Users can now select one or more exchanges and delete all of their stored candles in one operation.
+- **[NEW]** Added a "Fork" button to the strategy editor. You can now duplicate any strategy under a new name — the class name inside the code is automatically updated to match.
+- **[NEW]** Added three new backtest metrics: "Avg Trades / Day", "Avg Trades / Week", and "Avg Trades / Month". These are available in both the research module's returned metrics dict and the dashboard's Performance panel.
+- **[FIX]** Fixed a bug where the benchmark overlay was silently omitted from backtest chart images.
+- **[FIX]** Fixed the Monthly Returns Heatmap chart where negative months appeared yellow/green instead of red. 
+- **[FIX]** Fixed a display bug in the dashboard where the "Missing Required Warmup Candles" error message showed double quotes around the symbol name (e.g. `""MELANIA-USDT""`). The symbol is now stripped of any surrounding quotes before being displayed or used in the import request.
+- **[FIX]** Fixed a bug where the sidebar's collapsed state was not remembered after a page refresh. It is now persisted in localStorage.
+- **[FIX]** Fixed live trading on Binance USDⓈ-M Futures (Perpetual) broken by Binance's API change. Also, fixed an issue on paper trading on the same exchange.
+
+## 2.0.0 (28 April 2026)
+
+- **[BREAKING CHANGE]** The `generate_charts` parameter of `backtest()` has changed behavior. Previously it returned chart data (candles, orders, etc.) as a dict in the result. It now runs the full image-rendering pipeline (equity curve, drawdown, underwater, monthly heatmap, monthly distribution, trade PnL), saves the PNG files to disk, and returns `charts_session_id` and `charts_folder` in the result dict instead. If you were reading `result['charts']`, that key no longer exists.
+- **[NEW]** Added `optimize()` to the research API — runs hyperparameter optimization from a Python script or Jupyter notebook without the dashboard. Uses Optuna and Ray in the same way as the dashboard's optimization mode, but with no session, database, or WebSocket dependencies. Supports the same four objective functions: Sharpe, Calmar, Sortino, and Omega. Available via `from jesse.research import optimize`. A companion `print_optimize_summary()` function is also available for pretty-printing the ranked results table.
+- **[NEW]** `backtest()` now accepts three additional parameters: `benchmark` (bool), `candles_pipeline_class`, and `candles_pipeline_kwargs` — giving researchers more control over simulation behavior.
+- **[NEW]** Added `rule_significance_test()` to the research API — a bootstrap-based statistical significance test (signal-only simulator) that evaluates whether a trading rule's mean return is statistically distinguishable from noise. Available via `from jesse.research import rule_significance_test`.
+- **[NEW]** Added `plot_significance_test()` to the research API — generates a histogram of the bootstrap sampling distribution with the observed mean annotated, saved as a PNG. Available via `from jesse.research import plot_significance_test`.
+- **[NEW]** Added Rule Significance Testing to the UI Dashboard.
+- **[NEW]** Added a copy button to the **Performance** table header in the backtest results sidebar. Clicking it copies all metrics to the clipboard in a clean, two-column aligned plain-text formats so results can be easily shared.
+- **[IMPROVEMENT]** Removed the "Objective Progress" chart from the optimization page in the dashboard. It wasn't adding real value.
+- **[NEW]** Added **Max Underwater Period** to the backtest performance metrics — shows the longest consecutive period the strategy spent below its previous equity peak.
+- **[NEW]** Added separate **Win Rate (Long)** and **Win Rate (Short)** metrics to the backtest performance metrics, in addition to the existing total win rate, giving a clearer breakdown of directional trade performance.
+- **[IMPROVEMENT]** Added a search box for exchanges in the live and backtest pages of the settings.
+- **[IMPROVEMENT]** You no longer need to have the live plugin installed in order to be recognized as a premium user. Simply adding the keys in your .env file of the project is enough.
+- **[IMPROVEMENT]** Improved some initial guides and messages for new users in the dashboard to ease the onboarding process.
+ 
+
 ## 1.13.11 (9 April 2026)
 
 - **[FIX]** Fixed the `Exception: Error from server: Invalid nonce: duplicate nonce 1775606412374` error in the Hyperliquid.
