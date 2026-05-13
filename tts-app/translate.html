@@ -200,13 +200,14 @@
     </div>
     <div class="hint" id="modelCost"></div>
 
-    <details style="margin-top: 10px;">
-      <summary>Avanzado</summary>
-      <div class="field" style="margin-top: 10px;">
-        <label for="vadSilence">Silencio para cortar (ms)</label>
-        <input id="vadSilence" type="text" inputmode="numeric" value="600" />
-      </div>
-    </details>
+    <div class="field">
+      <label for="speedMode">Velocidad de respuesta</label>
+      <select id="speedMode">
+        <option value="natural">Natural &mdash; espera pausa clara</option>
+        <option value="rapid" selected>Rapido &mdash; recomendado</option>
+        <option value="overlap">Solapado &mdash; experimental, muy agresivo</option>
+      </select>
+    </div>
   </div>
 
   <div class="mic-wrap">
@@ -239,7 +240,7 @@
   const swapBtn = $("swapBtn");
   const voiceEl = $("voice");
   const modelEl = $("model");
-  const vadEl = $("vadSilence");
+  const speedModeEl = $("speedMode");
   const micBtn = $("micBtn");
   const micLabel = $("micLabel");
   const statusEl = $("status");
@@ -287,17 +288,29 @@
 
   const STORE = {
     apiKey: "tts.apiKey", langA: "rt.langA", langB: "rt.langB",
-    voice: "rt.voice", model: "rt.model", vad: "rt.vad",
+    voice: "rt.voice", model: "rt.model", speedMode: "rt.speedMode",
   };
   const load = (k, el) => { const v = localStorage.getItem(k); if (v !== null) el.value = v; };
   load(STORE.apiKey, apiKeyEl); load(STORE.langA, langAEl); load(STORE.langB, langBEl);
-  load(STORE.voice, voiceEl); load(STORE.model, modelEl); load(STORE.vad, vadEl);
+  load(STORE.voice, voiceEl); load(STORE.model, modelEl); load(STORE.speedMode, speedModeEl);
 
   const persist = (k, el, ev = "input") => el.addEventListener(ev, () => localStorage.setItem(k, el.value));
   persist(STORE.apiKey, apiKeyEl);
   persist(STORE.langA, langAEl, "change"); persist(STORE.langB, langBEl, "change");
   persist(STORE.voice, voiceEl, "change"); persist(STORE.model, modelEl, "change");
-  persist(STORE.vad, vadEl);
+  persist(STORE.speedMode, speedModeEl, "change");
+
+  function buildTurnDetection() {
+    const mode = speedModeEl.value;
+    if (mode === "overlap") {
+      return { type: "semantic_vad", eagerness: "high", create_response: true };
+    }
+    const silence = mode === "natural" ? 700 : 250;
+    return {
+      type: "server_vad", threshold: 0.4, prefix_padding_ms: 300,
+      silence_duration_ms: silence, create_response: true,
+    };
+  }
 
   const MODEL_COST = {
     "gpt-4o-mini-realtime-preview": "~$0.015/min entrada, ~$0.06/min salida. 10 min ~ $0.40-0.80.",
@@ -406,7 +419,6 @@ OUTPUT RULES:
     const voice = voiceEl.value;
     const langA = langAEl.value;
     const langB = langBEl.value;
-    const silenceMs = Math.max(100, parseInt(vadEl.value, 10) || 600);
     const instructions = buildInstructions(langA, langB);
 
     setStatus("Solicitando sesion...");
@@ -454,19 +466,13 @@ OUTPUT RULES:
           voice,
           modalities: ["audio", "text"],
           input_audio_transcription: { model: "whisper-1" },
-          turn_detection: {
-            type: "server_vad",
-            threshold: 0.4,
-            prefix_padding_ms: 300,
-            silence_duration_ms: silenceMs,
-            create_response: true,
-          },
+          turn_detection: buildTurnDetection(),
         },
       }));
       running = true;
       micBtn.classList.add("active");
       micBtn.disabled = false;
-      [modelEl, voiceEl, langAEl, langBEl].forEach(el => el.disabled = true);
+      [modelEl, voiceEl, langAEl, langBEl, speedModeEl].forEach(el => el.disabled = true);
       micLabel.textContent = "Escuchando... toca para parar";
       setStatus("En vivo (" + modelEl.value + ")", "ok");
     });
@@ -501,7 +507,7 @@ OUTPUT RULES:
   function stop() {
     running = false;
     micBtn.classList.remove("active");
-    [modelEl, voiceEl, langAEl, langBEl].forEach(el => el.disabled = false);
+    [modelEl, voiceEl, langAEl, langBEl, speedModeEl].forEach(el => el.disabled = false);
     micLabel.textContent = "Toca para iniciar";
     if (dc) { try { dc.close(); } catch {} dc = null; }
     if (pc) { try { pc.close(); } catch {} pc = null; }
