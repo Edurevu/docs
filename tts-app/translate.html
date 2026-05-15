@@ -193,9 +193,8 @@
       <div>
         <label for="model">Modelo</label>
         <select id="model">
-          <option value="gpt-4o-mini-realtime-preview" selected>mini realtime &mdash; barato</option>
-          <option value="gpt-realtime">gpt-realtime &mdash; mejor calidad</option>
-          <option value="gpt-4o-realtime-preview">gpt-4o realtime &mdash; intermedio</option>
+          <option value="gpt-realtime-2" selected>gpt-realtime-2 &mdash; recomendado</option>
+          <option value="gpt-realtime">gpt-realtime &mdash; anterior</option>
         </select>
       </div>
     </div>
@@ -314,9 +313,8 @@
   }
 
   const MODEL_COST = {
-    "gpt-4o-mini-realtime-preview": "~$0.015/min entrada, ~$0.06/min salida. 10 min ~ $0.40-0.80.",
-    "gpt-realtime":                  "~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
-    "gpt-4o-realtime-preview":       "~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
+    "gpt-realtime-2": "Modelo de voz mas reciente de OpenAI. ~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
+    "gpt-realtime":   "Modelo anterior, sigue disponible. ~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
   };
   const modelCostEl = document.getElementById("modelCost");
   const updateModelCost = () => { modelCostEl.textContent = MODEL_COST[modelEl.value] || ""; };
