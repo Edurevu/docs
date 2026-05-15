@@ -58,14 +58,8 @@ export default defineConfig({
                 text: 'JesseGPT',
                 link: 'https://jesse.trade/gpt',
             },
-            {
-                text: 'Blog',
-                link: 'https://jesse.trade/blog',
-            },
-            {
-                text: 'Help Center',
-                link: 'https://jesse.trade/help',
-            },
+
+
             {
                 text: 'Discord',
                 link: 'https://jesse.trade/discord',
@@ -104,9 +98,20 @@ export default defineConfig({
                     {text: 'Configuration', link: '/docs/configuration'},
                     {text: 'Routes', link: '/docs/routes'},
                     {text: 'Import Candles', link: '/docs/import-candles'},
-                    {text: 'Backtest', link: '/docs/backtest'},
                     {text: 'Utility Functions', link: '/docs/utils'},
                     {text: 'Debugging', link: '/docs/debugging'},
+                ]
+            },
+            {
+                text: 'Backtest',
+                collapsed: true,
+                items: [
+                    {text: 'Introduction', link: '/docs/backtest/'},
+                    {text: 'Tabs', link: '/docs/backtest/tabs'},
+                    {text: 'Results', link: '/docs/backtest/results'},
+                    {text: 'Charts', link: '/docs/backtest/charts'},
+                    {text: 'Exports', link: '/docs/backtest/exports'},
+                    {text: '✨ Benchmark', link: '/docs/backtest/benchmark'},
                 ]
             },
             {
@@ -145,6 +150,7 @@ export default defineConfig({
                 collapsed: true,
                 items: [
                     {text: 'Livetrade', link: '/docs/livetrade'},
+                    {text: 'VPS Setup', link: '/docs/vps-setup'},
                     {text: 'Security', link: '/docs/security'},
                     {text: 'Notifications', link: '/docs/notifications'},
                 ]
@@ -182,6 +188,15 @@ export default defineConfig({
                 ]
             },
             {
+                text: 'Rule Significance Testing',
+                collapsed: true,
+                items: [
+                    {text: 'Introduction', link: '/docs/rule-significance-testing/'},
+                    {text: 'How It Works (Bootstrap)', link: '/docs/rule-significance-testing/bootstrap'},
+                    {text: 'Interpreting Results', link: '/docs/rule-significance-testing/interpreting-results'},
+                ]
+            },
+            {
                 text: 'Research Module',
                 collapsed: true,
                 items: [
@@ -191,6 +206,15 @@ export default defineConfig({
                     {text: 'Indicators', link: '/docs/research/indicators'},
                     {text: 'Backtest', link: '/docs/research/backtest'},
                     {text: 'Monte Carlo', link: '/docs/research/monte_carlo'},
+                    {text: 'Optimization', link: '/docs/research/optimize'},
+                    {
+                        text: 'Rule Significance Testing',
+                        collapsed: false,
+                        items: [
+                            {text: 'Introduction',              link: '/docs/research/rule-significance-testing/'},
+                            {text: 'Usage Example',             link: '/docs/research/rule-significance-testing/usage'},
+                        ]
+                    },
                     {
                         text: 'Machine Learning',
                         collapsed: false,
@@ -211,7 +235,7 @@ export default defineConfig({
             {text: '🔗 Resources', link: 'https://github.com/jesse-ai/awesome-jesse/'},
             {text: '📺 Video Tutorials', link: 'https://jesse.trade/youtube'},
             {text: '🎯 Strategies', link: 'https://jesse.trade/strategies/'},
-            {text: '📚 FAQs', link: 'https://jesse.trade/help'},
+
             {text: '📜 Changelog', link: '/docs/changelog'},
             {text: '📈 Roadmap', link: 'https://jesse.trade/roadmap'}
         ],
@@ -220,7 +244,6 @@ export default defineConfig({
             {icon: 'github', link: 'https://github.com/jesse-ai/jesse'},
             {icon: 'discord', link: 'https://jesse.trade/discord'},
             {icon: 'youtube', link: 'https://jesse.trade/youtube'},
-            {icon: 'x', link: 'https://twitter.com/jesse_ai_com'},
         ]
     }
 })
