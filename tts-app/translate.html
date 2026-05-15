@@ -425,10 +425,16 @@ OUTPUT RULES:
 
     let ephemeralKey;
     try {
-      const sessRes = await fetch("https://api.openai.com/v1/realtime/sessions", {
+      const sessRes = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
         method: "POST",
         headers: { "Authorization": "Bearer " + apiKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ model, voice }),
+        body: JSON.stringify({
+          session: {
+            type: "realtime",
+            model,
+            audio: { output: { voice } },
+          },
+        }),
       });
       if (!sessRes.ok) {
         const t = await sessRes.text();
@@ -436,7 +442,7 @@ OUTPUT RULES:
         micBtn.disabled = false; return;
       }
       const sess = await sessRes.json();
-      ephemeralKey = sess.client_secret && sess.client_secret.value;
+      ephemeralKey = sess.value || (sess.client_secret && sess.client_secret.value);
       if (!ephemeralKey) { setStatus("Sesion sin client_secret.", "error"); micBtn.disabled = false; return; }
     } catch (e) {
       setStatus("Fallo de red al crear sesion: " + e.message, "error");
@@ -461,11 +467,15 @@ OUTPUT RULES:
       dc.send(JSON.stringify({
         type: "session.update",
         session: {
+          type: "realtime",
           instructions,
-          voice,
-          modalities: ["audio", "text"],
-          input_audio_transcription: { model: "whisper-1" },
-          turn_detection: buildTurnDetection(),
+          audio: {
+            input: {
+              transcription: { model: "whisper-1" },
+              turn_detection: buildTurnDetection(),
+            },
+            output: { voice },
+          },
         },
       }));
       running = true;
@@ -484,7 +494,7 @@ OUTPUT RULES:
     try {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      const sdpRes = await fetch("https://api.openai.com/v1/realtime?model=" + encodeURIComponent(model), {
+      const sdpRes = await fetch("https://api.openai.com/v1/realtime/calls?model=" + encodeURIComponent(model), {
         method: "POST",
         headers: { "Authorization": "Bearer " + ephemeralKey, "Content-Type": "application/sdp" },
         body: offer.sdp,
