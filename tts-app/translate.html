@@ -84,6 +84,10 @@
   }
   .mic svg { width: 56px; height: 56px; }
   .mic-label { margin-top: 12px; font-size: 14px; color: var(--muted); }
+  .model-badge { margin-top: 6px; font-size: 12px; color: var(--accent-2);
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px 12px; font-weight: 600; }
+  .model-badge.warn { color: #ffb454; border-color: #ffb454; }
 
   .status { font-size: 13px; color: var(--muted); margin: 10px 0; min-height: 18px; text-align: center; }
   .status.error { color: var(--danger); }
@@ -190,6 +194,7 @@
       </svg>
     </button>
     <div class="mic-label" id="micLabel">Toca para iniciar</div>
+    <div class="model-badge" id="modelBadge"></div>
   </div>
 
   <div id="status" class="status">Listo</div>
@@ -214,6 +219,7 @@
   const vadEl = $("vadSilence");
   const micBtn = $("micBtn");
   const micLabel = $("micLabel");
+  const modelBadge = $("modelBadge");
   const statusEl = $("status");
   const transcriptEl = $("transcript");
   const remoteAudio = $("remoteAudio");
@@ -281,6 +287,22 @@
   const updateModelCost = () => { modelCostEl.textContent = MODEL_COST[modelEl.value] || ""; };
   modelEl.addEventListener("change", updateModelCost);
   updateModelCost();
+
+  // Indicador siempre visible del modelo activo, con aviso si es el mini
+  // (el mini traduce mal en las dos direcciones).
+  const MINI_MODEL = "gpt-4o-mini-realtime-preview";
+  const updateModelBadge = () => {
+    const m = modelEl.value;
+    if (m === MINI_MODEL) {
+      modelBadge.textContent = "Modelo: mini (cambia a gpt-realtime-2)";
+      modelBadge.classList.add("warn");
+    } else {
+      modelBadge.textContent = "Modelo: " + m;
+      modelBadge.classList.remove("warn");
+    }
+  };
+  modelEl.addEventListener("change", updateModelBadge);
+  updateModelBadge();
 
   toggleKeyEl.addEventListener("click", () => {
     const showing = apiKeyEl.type === "text";
