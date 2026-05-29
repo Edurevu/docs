@@ -163,8 +163,9 @@
       <div>
         <label for="model">Modelo</label>
         <select id="model">
-          <option value="gpt-4o-mini-realtime-preview" selected>mini realtime &mdash; barato</option>
-          <option value="gpt-realtime">gpt-realtime &mdash; mejor calidad</option>
+          <option value="gpt-realtime-2" selected>gpt-realtime-2 &mdash; nuevo, mejor para 2 idiomas</option>
+          <option value="gpt-realtime">gpt-realtime &mdash; buena calidad</option>
+          <option value="gpt-4o-mini-realtime-preview">mini realtime &mdash; barato</option>
           <option value="gpt-4o-realtime-preview">gpt-4o realtime &mdash; intermedio</option>
         </select>
       </div>
@@ -271,6 +272,7 @@
   persist(STORE.vad, vadEl);
 
   const MODEL_COST = {
+    "gpt-realtime-2":                "Nuevo (razonamiento tipo GPT-5), detecta idioma mejor. ~$0.18-0.46/min. 10 min ~ $2-4.",
     "gpt-4o-mini-realtime-preview": "~$0.015/min entrada, ~$0.06/min salida. 10 min ~ $0.40-0.80.",
     "gpt-realtime":                  "~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
     "gpt-4o-realtime-preview":       "~$0.06/min entrada, ~$0.24/min salida. 10 min ~ $1.50-3.",
